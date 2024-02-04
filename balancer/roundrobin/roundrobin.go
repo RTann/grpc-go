@@ -72,10 +72,11 @@ type rrPicker struct {
 	next     uint32
 }
 
-func (p *rrPicker) Pick(balancer.PickInfo) (balancer.PickResult, error) {
+func (p *rrPicker) Pick(info balancer.PickInfo) (balancer.PickResult, error) {
 	subConnsLen := uint32(len(p.subConns))
 	nextIndex := atomic.AddUint32(&p.next, 1)
 
 	sc := p.subConns[nextIndex%subConnsLen]
+	logger.Infof("roundrobinPicker: Choosing subconn %v for %s", sc, info.FullMethodName)
 	return balancer.PickResult{SubConn: sc}, nil
 }
